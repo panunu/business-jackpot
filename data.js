@@ -149,7 +149,9 @@ const DATA = {
     "nykyiset korporaatiot ovat lopettaneet toimintansa",
     "kansainväliset rajat ovat poistuneet",
     "demokratia ei enää ehdi mukautumaan muutoksiin",
-
+    "luottamuksen rakentaminen on ensisijaista",
+    "kotitaloudet ovat omavaraisia",
+    "perustulo on käytössä kaikkialla",
 
     // "ilmasto on lämmennyt neljä astetta",
     // "kaupungit ovat täysin autottomia",
