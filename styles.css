@@ -807,9 +807,28 @@ kbd {
   transition: filter 0.5s ease, background 0.5s ease, opacity 0.5s ease, box-shadow 0.5s ease;
 }
 
-body.power-off .logo,
-body.power-off .marquee,
-body.power-off .marquee-fruit { filter: grayscale(0.5) brightness(0.62); }
+/* The marquee is greyed by an overlay rather than by a filter on the marquee
+   itself: a filter would take the LED strip and the coin slot down with it, and
+   nothing inside a filtered element can win its colour back. The overlay filters
+   only what is painted beneath it, which is everything except those two. */
+.marquee-dim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  -webkit-backdrop-filter: grayscale(0.5) brightness(0.62);
+  backdrop-filter: grayscale(0.5) brightness(0.62);
+}
+
+body.power-ready .marquee-dim { transition: opacity 0.5s ease; }
+body.power-off .marquee-dim { opacity: 1; }
+
+/* Without backdrop-filter, fall back to greying the whole marquee. */
+@supports not (backdrop-filter: grayscale(0.5)) {
+  @supports not (-webkit-backdrop-filter: grayscale(0.5)) {
+    body.power-off .marquee { filter: grayscale(0.5) brightness(0.62); }
+  }
+}
 
 body.power-off .play-area {
   filter: grayscale(0.5) brightness(0.62);

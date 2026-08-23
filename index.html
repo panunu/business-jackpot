@@ -27,6 +27,10 @@
     </h1>
     <div class="marquee-gloss" aria-hidden="true"></div>
 
+    <!-- Greys out everything painted before it while the power is off. The coin
+         slot and the LED strip come after it, so they keep their own colours. -->
+    <div class="marquee-dim" aria-hidden="true"></div>
+
     <!-- Coin slot: the machine is dead until a coin goes in -->
     <div class="coin-unit">
       <button class="coin-slot" id="coinSlot" type="button" title="Syötä kolikko">
