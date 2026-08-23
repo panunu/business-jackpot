@@ -19,29 +19,33 @@
 
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  const lever = document.getElementById("lever");
+  const spinBtn = document.getElementById("spinBtn");
+  const spinCountEl = document.getElementById("spinCount");
+  const holdCountEl = document.getElementById("holdCount");
+  const comboCountEl = document.getElementById("comboCount");
   const resultEl = document.getElementById("result");
   const sentenceEl = document.getElementById("resultSentence");
   const copyBtn = document.getElementById("copyBtn");
-  const spinAgainBtn = document.getElementById("spinAgainBtn");
   const soundBtn = document.getElementById("soundBtn");
   const soundIcon = document.getElementById("soundIcon");
 
-  const IDLE_TEXT = "Vedä vivusta ja katso, millainen idea syntyy.";
+  const IDLE_TEXT = "Paina PYÖRÄYTÄ ja katso, millainen idea syntyy.";
 
   let spinning = false;
+  let spinCount = 0;
   let soundOn = localStorage.getItem("slot-sound") !== "off";
 
   /* Per-reel runtime state, built from the markup. */
   const reels = REELS.map(function (def) {
     const root = document.querySelector('.reel[data-reel="' + def.key + '"]');
+    const lockBtn = document.querySelector('.hold-btn[data-hold="' + def.key + '"]');
     return {
       def: def,
       root: root,
       window: root.querySelector(".reel-window"),
       strip: root.querySelector(".reel-strip"),
-      lockBtn: root.querySelector(".lock-btn"),
-      lockText: root.querySelector(".lock-text"),
+      lockBtn: lockBtn,
+      lockText: lockBtn.querySelector(".lock-text"),
       locked: false,
       value: null
     };
@@ -154,15 +158,14 @@
 
     const active = reels.filter(function (r) { return !r.locked; });
     if (!active.length) {
-      /* Everything is locked — nothing to roll, just nudge the lever. */
-      pullLever();
+      /* Everything is locked — nothing to roll, so just shrug at the button. */
+      nudgeSpinButton();
       return;
     }
 
     spinning = true;
-    lever.disabled = true;
+    spinBtn.disabled = true;
     clearResult();
-    pullLever();
     sound.whirr();
 
     const spins = active.map(function (reel, i) {
@@ -171,15 +174,18 @@
 
     Promise.all(spins).then(function () {
       spinning = false;
-      lever.disabled = false;
+      spinBtn.disabled = false;
+      spinCount += 1;
+      updateCounters();
       showResult();
       sound.chime();
     });
   }
 
-  function pullLever() {
-    lever.classList.add("is-pulled");
-    window.setTimeout(function () { lever.classList.remove("is-pulled"); }, 170);
+  function nudgeSpinButton() {
+    spinBtn.classList.remove("is-nudging");
+    void spinBtn.offsetWidth;
+    spinBtn.classList.add("is-nudging");
   }
 
   /* ---------------- Result sentence ---------------- */
@@ -234,7 +240,19 @@
     reel.root.classList.toggle("is-locked", reel.locked);
     reel.lockBtn.setAttribute("aria-pressed", String(reel.locked));
     reel.lockText.textContent = reel.locked ? "Lukittu" : "Lukitse";
+    updateCounters();
     sound.tick();
+  }
+
+  /* ---------------- LED counters ---------------- */
+
+  function updateCounters() {
+    spinCountEl.textContent = String(spinCount);
+    holdCountEl.textContent = String(reels.filter(function (r) { return r.locked; }).length);
+  }
+
+  function totalCombinations() {
+    return REELS.reduce(function (acc, def) { return acc * def.items.length; }, 1);
   }
 
   /* ---------------- Sound (WebAudio, no asset files) ---------------- */
@@ -299,9 +317,10 @@
     reel.lockBtn.addEventListener("click", function () { toggleLock(reel); });
   });
 
-  lever.classList.add("is-idle");
-  lever.addEventListener("click", spin);
-  spinAgainBtn.addEventListener("click", spin);
+  spinBtn.addEventListener("click", spin);
+
+  comboCountEl.textContent = totalCombinations().toLocaleString("fi-FI");
+  updateCounters();
 
   copyBtn.addEventListener("click", function () {
     navigator.clipboard.writeText(plainSentence()).then(function () {

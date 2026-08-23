@@ -5,94 +5,115 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bisnesidea-hedelmäpeli</title>
 <meta name="description" content="Arvo itsellesi bisnesidea: intohimo × toimiala × tulevaisuuden maailma.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎰</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍒</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<main class="stage">
+<main class="machine">
 
-  <header class="masthead">
-    <h1>Bisnesidea&#8209;hedelmäpeli</h1>
-    <p class="tagline">Intohimo &times; Toimiala &times; Tulevaisuus</p>
+  <!-- Arched marquee with the logo -->
+  <header class="marquee">
+    <div class="marquee-fruit" aria-hidden="true">
+      <span>🍒</span><span>🍋</span><span>🍇</span><span>🍊</span><span>🍓</span>
+      <span>🍉</span><span>🍐</span><span>⭐</span><span>🔔</span><span>🍏</span>
+    </div>
+    <h1 class="logo">
+      <span class="logo-main" data-text="Bisnesidea">Bisnesidea</span>
+      <span class="logo-sub">Intohimo &times; Toimiala &times; Tulevaisuus</span>
+    </h1>
+    <div class="marquee-gloss" aria-hidden="true"></div>
   </header>
 
-  <!-- The cabinet: three reels plus the lever on the right -->
-  <section class="cabinet" aria-label="Hedelmäpeli">
-    <div class="cabinet-inner">
-
-      <div class="reels" id="reels">
-        <!-- Reel template, repeated three times -->
-        <article class="reel" data-reel="passion">
-          <div class="reel-label">Intohimo</div>
-          <div class="reel-window">
-            <div class="reel-strip"></div>
-            <div class="reel-glass" aria-hidden="true"></div>
-            <div class="lock-flag" aria-hidden="true">Lukittu</div>
-          </div>
-          <button class="lock-btn" type="button" aria-pressed="false">
-            <span class="lock-icon" aria-hidden="true"></span>
-            <span class="lock-text">Lukitse</span>
-          </button>
-        </article>
-
-        <article class="reel" data-reel="sector">
-          <div class="reel-label">Toimiala</div>
-          <div class="reel-window">
-            <div class="reel-strip"></div>
-            <div class="reel-glass" aria-hidden="true"></div>
-            <div class="lock-flag" aria-hidden="true">Lukittu</div>
-          </div>
-          <button class="lock-btn" type="button" aria-pressed="false">
-            <span class="lock-icon" aria-hidden="true"></span>
-            <span class="lock-text">Lukitse</span>
-          </button>
-        </article>
-
-        <article class="reel" data-reel="scenario">
-          <div class="reel-label">Maailma, jossa&hellip;</div>
-          <div class="reel-window">
-            <div class="reel-strip"></div>
-            <div class="reel-glass" aria-hidden="true"></div>
-            <div class="lock-flag" aria-hidden="true">Lukittu</div>
-          </div>
-          <button class="lock-btn" type="button" aria-pressed="false">
-            <span class="lock-icon" aria-hidden="true"></span>
-            <span class="lock-text">Lukitse</span>
-          </button>
-        </article>
-      </div>
-
-      <!-- The lever. Click the knob (or the whole column) to spin. -->
-      <div class="lever-column">
-        <button class="lever" id="lever" type="button" aria-label="Vedä vivusta">
-          <span class="lever-slot" aria-hidden="true"></span>
-          <span class="lever-arm">
-            <span class="lever-rod"></span>
-            <span class="lever-knob"></span>
-          </span>
-        </button>
-        <span class="lever-hint">Vedä!</span>
-      </div>
-
+  <!-- LED counter strip -->
+  <div class="led-strip">
+    <div class="led-cell">
+      <span class="led-value" id="comboCount">0</span>
+      <span class="led-label">Mahdollisuuksia</span>
     </div>
+
+    <div class="led-cell">
+      <span class="led-value" id="spinCount">0</span>
+      <span class="led-label">Pyöräytyksiä</span>
+    </div>
+
+    <div class="led-cell">
+      <span class="led-value" id="holdCount">0</span>
+      <span class="led-label">Lukittuja</span>
+    </div>
+  </div>
+
+  <!-- Reels -->
+  <section class="play-area" aria-label="Hedelmäpeli">
+    <div class="reels" id="reels">
+
+      <!-- Win line: drawn first so the reel windows cover it, leaving the line
+           visible in the gaps between them, with arrows at both ends -->
+      <div class="win-line" aria-hidden="true"></div>
+
+      <article class="reel" data-reel="passion">
+        <div class="reel-label">Intohimo</div>
+        <div class="reel-window">
+          <div class="reel-strip"></div>
+          <div class="reel-glass" aria-hidden="true"></div>
+          <div class="lock-flag" aria-hidden="true">Lukittu</div>
+        </div>
+      </article>
+
+      <article class="reel" data-reel="sector">
+        <div class="reel-label">Toimiala</div>
+        <div class="reel-window">
+          <div class="reel-strip"></div>
+          <div class="reel-glass" aria-hidden="true"></div>
+          <div class="lock-flag" aria-hidden="true">Lukittu</div>
+        </div>
+      </article>
+
+      <article class="reel" data-reel="scenario">
+        <div class="reel-label">Maailma, jossa&hellip;</div>
+        <div class="reel-window">
+          <div class="reel-strip"></div>
+          <div class="reel-glass" aria-hidden="true"></div>
+          <div class="lock-flag" aria-hidden="true">Lukittu</div>
+        </div>
+      </article>
+    </div>
+
+</section>
+
+  <!-- Button deck -->
+  <section class="deck">
+    <div class="deck-holds">
+      <button class="hold-btn" data-hold="passion" type="button" aria-pressed="false">
+        <span class="hold-dim">Intohimo</span>
+        <span class="lock-text">Lukitse</span>
+      </button>
+      <button class="hold-btn" data-hold="sector" type="button" aria-pressed="false">
+        <span class="hold-dim">Toimiala</span>
+        <span class="lock-text">Lukitse</span>
+      </button>
+      <button class="hold-btn" data-hold="scenario" type="button" aria-pressed="false">
+        <span class="hold-dim">Maailma</span>
+        <span class="lock-text">Lukitse</span>
+      </button>
+    </div>
+    <button class="spin-btn" id="spinBtn" type="button">Pyöräytä</button>
   </section>
 
-  <!-- Result sentence. The box is always in the layout; .is-empty only blanks
-       its contents, so nothing shifts when an idea appears or is cleared. -->
+  <!-- Result. The panel is always in the layout; .is-empty only blanks its
+       contents, so nothing shifts when an idea appears or is cleared. -->
   <section class="result is-empty" id="result">
-    <p class="result-sentence"><span id="resultSentence">Vedä vivusta ja katso, millainen idea syntyy.</span></p>
+    <p class="result-sentence"><span id="resultSentence">Paina PYÖRÄYTÄ ja katso, millainen idea syntyy.</span></p>
     <div class="result-actions">
       <button class="ghost-btn" id="copyBtn" type="button">Kopioi idea</button>
-      <button class="ghost-btn" id="spinAgainBtn" type="button">Pyöräytä uudelleen</button>
     </div>
   </section>
 
   <footer class="footnote">
-    <span><kbd>Välilyönti</kbd> pyöräyttää &middot; <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> lukitsevat kiekot</span>
+    <span><kbd>Välilyönti</kbd> pyöräyttää &middot; <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> lukitsevat kiekon</span>
     <button class="sound-btn" id="soundBtn" type="button" aria-pressed="true" title="Äänet">
       <span id="soundIcon">🔊</span><span class="sound-text">Äänet</span>
     </button>
