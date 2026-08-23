@@ -29,7 +29,7 @@
   const soundBtn = document.getElementById("soundBtn");
   const soundIcon = document.getElementById("soundIcon");
 
-  const IDLE_TEXT = "Paina PYÖRÄYTÄ ja katso, millainen idea syntyy.";
+  const IDLE_TEXT = "Nyt jännittää...";
 
   let spinning = false;
   let spinCount = 0;
