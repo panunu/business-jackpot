@@ -28,10 +28,14 @@
   const copyBtn = document.getElementById("copyBtn");
   const soundBtn = document.getElementById("soundBtn");
   const soundIcon = document.getElementById("soundIcon");
+  const coinSlot = document.getElementById("coinSlot");
+  const coinEl = document.getElementById("coin");
+  const machineEl = document.querySelector(".machine");
 
   const IDLE_TEXT = "Nyt jännittää...";
 
   let spinning = false;
+  let powered = false;   // no coin in yet — the machine is dead
   let spinCount = 0;
   let soundOn = localStorage.getItem("slot-sound") !== "off";
 
@@ -154,7 +158,7 @@
   }
 
   function spin() {
-    if (spinning) return;
+    if (spinning || !powered) return;
 
     const active = reels.filter(function (r) { return !r.locked; });
     if (!active.length) {
@@ -165,6 +169,7 @@
 
     spinning = true;
     spinBtn.disabled = true;
+    setSpinAttract(false);
     clearResult();
     sound.whirr();
 
@@ -175,11 +180,18 @@
     Promise.all(spins).then(function () {
       spinning = false;
       spinBtn.disabled = false;
+      setSpinAttract(true);
       spinCount += 1;
       updateCounters();
       showResult();
       sound.chime();
     });
+  }
+
+  /* The spin button blinks whenever it is sitting there waiting to be pressed,
+     and goes quiet while the reels are actually rolling. */
+  function setSpinAttract(on) {
+    spinBtn.classList.toggle("is-attracting", on);
   }
 
   function nudgeSpinButton() {
@@ -236,6 +248,7 @@
   /* ---------------- Locks ---------------- */
 
   function toggleLock(reel) {
+    if (!powered || spinning) return;
     reel.locked = !reel.locked;
     reel.root.classList.toggle("is-locked", reel.locked);
     reel.lockBtn.setAttribute("aria-pressed", String(reel.locked));
@@ -302,6 +315,30 @@
         osc.start();
         osc.stop(ac.currentTime + 0.4);
       },
+      coin: function () {
+        /* Two quick metallic pings — a coin rattling down the chute. */
+        blip(1650, 0.09, "square", 0.05);
+        window.setTimeout(function () { blip(1180, 0.12, "square", 0.045); }, 70);
+        window.setTimeout(function () { blip(820, 0.18, "triangle", 0.06); }, 150);
+      },
+      powerUp: function () {
+        const ac = context();
+        if (!ac) return;
+        const osc = ac.createOscillator();
+        const amp = ac.createGain();
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(70, ac.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(520, ac.currentTime + 0.55);
+        amp.gain.setValueAtTime(0.0001, ac.currentTime);
+        amp.gain.exponentialRampToValueAtTime(0.06, ac.currentTime + 0.3);
+        amp.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + 0.7);
+        osc.connect(amp).connect(ac.destination);
+        osc.start();
+        osc.stop(ac.currentTime + 0.7);
+        [523, 659, 784, 1047].forEach(function (f, i) {
+          window.setTimeout(function () { blip(f, 0.22, "sine", 0.06); }, 450 + i * 110);
+        });
+      },
       chime: function () {
         [660, 880, 1320].forEach(function (f, i) {
           window.setTimeout(function () { blip(f, 0.28, "sine", 0.07); }, i * 90);
@@ -309,6 +346,44 @@
       }
     };
   })();
+
+  /* ---------------- Power ---------------- */
+
+  /* The whole cabinet is dead until a coin goes in: the deck is inert, the
+     reels are dark, and the LED strip shows nothing but "Syötä kolikko". */
+  function setControlsEnabled(on) {
+    spinBtn.disabled = !on;
+    reels.forEach(function (reel) { reel.lockBtn.disabled = !on; });
+  }
+
+  function insertCoin() {
+    if (powered || coinEl.classList.contains("is-inserting")) return;
+
+    sound.coin();
+    coinEl.classList.add("is-inserting");
+
+    /* Let the coin finish dropping through the slot before the lights come on. */
+    window.setTimeout(powerUp, reduceMotion ? 0 : 620);
+  }
+
+  function powerUp() {
+    if (powered) return;
+    powered = true;
+
+    document.body.classList.remove("power-off");
+    setControlsEnabled(true);
+    setSpinAttract(true);
+    sound.powerUp();
+
+    if (!reduceMotion) {
+      machineEl.classList.add("is-powering-up");
+      window.setTimeout(function () {
+        machineEl.classList.remove("is-powering-up");
+      }, 950);
+    }
+
+    spinBtn.focus({ preventScroll: true });
+  }
 
   /* ---------------- Wiring ---------------- */
 
@@ -318,6 +393,14 @@
   });
 
   spinBtn.addEventListener("click", spin);
+  coinSlot.addEventListener("click", insertCoin);
+  setControlsEnabled(false);
+
+  /* Arm the power-up fade only after the first paint, so the cabinet does not
+     flash its lit colours while the page is still loading. */
+  requestAnimationFrame(function () {
+    document.body.classList.add("power-ready");
+  });
 
   comboCountEl.textContent = totalCombinations().toLocaleString("fi-FI");
   updateCounters();
@@ -342,6 +425,16 @@
 
   document.addEventListener("keydown", function (e) {
     if (e.target.tagName === "BUTTON" && e.key === " ") e.preventDefault();
+
+    /* While the machine is off, the only thing any key does is feed it. */
+    if (!powered) {
+      if (e.key === " " || e.key === "Enter") {
+        e.preventDefault();
+        insertCoin();
+      }
+      return;
+    }
+
     if (e.key === " " || e.key === "Enter" && e.target === document.body) {
       e.preventDefault();
       spin();

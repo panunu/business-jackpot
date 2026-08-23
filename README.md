@@ -38,6 +38,11 @@ Two things to keep in mind:
 
 ## Controls
 
+The machine starts switched off: the cabinet is dark and the LED strip shows only
+**Syötä kolikko**. Click the coin slot on the right of the marquee (or press
+<kbd>Space</kbd>) to drop the coin in — the machine powers up and everything below
+starts working. It stays on for the rest of the visit.
+
 - **PYÖRÄYTÄ** button or <kbd>Space</kbd> — spin
 - **LUKITSE** buttons, or <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> — lock a reel so it keeps its
   value through the next spin

@@ -29,6 +29,9 @@
   /* Reel geometry — JS reads these to position the strips */
   --item-h: 84px;
   --window-mult: 2.1;
+
+  /* Coin slot */
+  --slot-size: clamp(56px, 8.4vw, 82px);
 }
 
 * { box-sizing: border-box; }
@@ -43,11 +46,11 @@ body {
   justify-content: center;
   font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
   color: var(--ink);
-  background:
-    radial-gradient(900px 520px at 50% 0%, #4b3a2c, transparent 70%),
-    radial-gradient(1200px 700px at 50% 110%, #2a1c14, transparent 70%),
-    #1a1210;
+  background: radial-gradient(900px 520px at 50% 0%, #4b3a2c, transparent 70%),
+  radial-gradient(1200px 700px at 50% 110%, #2a1c14, transparent 70%),
+  #1a1210;
   -webkit-font-smoothing: antialiased;
+  cursor: default;
 }
 
 /* ---------------- Cabinet ---------------- */
@@ -74,7 +77,7 @@ body {
 .marquee {
   position: relative;
   overflow: hidden;
-  padding: clamp(20px, 4.5vw, 42px) 20px clamp(14px, 2.6vw, 24px);
+  padding: clamp(20px, 4.5vw, 42px) clamp(88px, 13vw, 150px) clamp(14px, 2.6vw, 24px);
   border-radius: 36% 36% 10px 10px / 128px 128px 10px 10px;
   text-align: center;
   background:
@@ -156,6 +159,143 @@ body {
     -2px -2px 0 var(--red), 2px -2px 0 var(--red), -2px 2px 0 var(--red), 2px 2px 0 var(--red),
     0 5px 0 rgba(120, 20, 0, 0.5);
 }
+
+/* ---------------- Coin slot ---------------- */
+
+/* Bolted to the right-hand side of the marquee, next to the logo. */
+.coin-unit {
+  position: absolute;
+  /* Clear of the arch's curved right edge, and of the coin's travel room */
+  right: clamp(26px, 3vw, 62px);
+  top: 58%;
+  transform: translateY(-50%);
+  width: var(--slot-size);
+  height: var(--slot-size);
+}
+
+.coin-slot {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* Black plastic bezel, sunk into the panel */
+.coin-bezel {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background:
+    radial-gradient(120% 120% at 32% 22%, #5c5c60 0%, #2a2a2d 34%, #131315 62%, #0a0a0b 100%);
+  box-shadow:
+    inset 0 2px 2px rgba(255, 255, 255, 0.32),
+    inset 0 -3px 5px rgba(0, 0, 0, 0.9),
+    0 3px 0 rgba(0, 0, 0, 0.55),
+    0 8px 18px rgba(60, 20, 0, 0.55),
+    0 0 0 2px rgba(0, 0, 0, 0.35);
+}
+
+/* Inner recess the coin drops into */
+.coin-bezel::before {
+  content: "";
+  position: absolute;
+  inset: 14%;
+  border-radius: 50%;
+  background: radial-gradient(90% 90% at 60% 75%, #3a3a3e 0%, #17171a 55%, #08080a 100%);
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.95), inset 0 -2px 2px rgba(255, 255, 255, 0.12);
+}
+
+/* The mouth itself */
+.coin-mouth {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 11%;
+  height: 56%;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background: #000;
+  box-shadow:
+    inset 0 0 3px 1px rgba(0, 0, 0, 0.9),
+    0 0 0 1px rgba(180, 180, 190, 0.45),
+    0 0 6px rgba(0, 0, 0, 0.8);
+}
+
+/* Green "insert coin" lamp alongside the mouth */
+.coin-led {
+  position: absolute;
+  left: 62%;
+  top: 50%;
+  width: 6%;
+  height: 46%;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background: #1f6b2c;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.6);
+  transition: background 0.4s ease, box-shadow 0.4s ease;
+}
+
+@keyframes coin-led-pulse {
+  0%, 100% { background: #35ff6a; box-shadow: 0 0 10px 2px rgba(60, 255, 110, 0.85), 0 0 22px 6px rgba(40, 220, 90, 0.45); }
+  50%      { background: #16a13a; box-shadow: 0 0 5px 1px rgba(40, 200, 80, 0.5); }
+}
+
+body.power-off .coin-led { animation: coin-led-pulse 1.5s ease-in-out infinite; }
+
+.coin-slot:hover .coin-bezel { filter: brightness(1.15); }
+.coin-slot:active .coin-bezel { transform: translateY(2px); }
+
+/* The coin waiting to go in */
+.coin {
+  position: absolute;
+  left: calc(var(--slot-size) * 0.66);
+  top: 50%;
+  width: calc(var(--slot-size) * 0.42);
+  height: calc(var(--slot-size) * 0.42);
+  margin-top: calc(var(--slot-size) * -0.21);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: radial-gradient(70% 70% at 34% 28%, #fff3b0 0%, #ffd447 38%, #d69a09 78%, #a06f04 100%);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.55),
+    inset 0 -3px 5px rgba(120, 70, 0, 0.55),
+    0 3px 7px rgba(0, 0, 0, 0.5);
+  color: #7a5202;
+  font-family: "Baloo 2", Inter, sans-serif;
+  font-weight: 800;
+  font-size: calc(var(--slot-size) * 0.24);
+  line-height: 1;
+  pointer-events: none;
+  animation: coin-wait 1.8s ease-in-out infinite;
+}
+
+@keyframes coin-wait {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(5px); }
+}
+
+/* Tipped on edge, slid into the mouth, gone */
+@keyframes coin-insert {
+  0%   { transform: translate(0, 0) scaleX(1); opacity: 1; }
+  45%  { transform: translate(calc(var(--slot-size) * -0.37), 0) scaleX(0.9); opacity: 1; }
+  70%  { transform: translate(calc(var(--slot-size) * -0.37), 0) scaleX(0.08); opacity: 1; }
+  100% { transform: translate(calc(var(--slot-size) * -0.37), calc(var(--slot-size) * 0.3)) scaleX(0.08); opacity: 0; }
+}
+
+.coin.is-inserting { animation: coin-insert 0.7s cubic-bezier(0.45, 0.05, 0.55, 1) forwards; }
+
+/* Powered up: coin gone, slot lamp resting */
+body:not(.power-off) .coin { display: none; }
+body:not(.power-off) .coin-led { background: #114a1e; }
+body:not(.power-off) .coin-slot { cursor: default; }
 
 /* ---------------- LED strip ---------------- */
 
@@ -379,7 +519,7 @@ body {
   gap: clamp(10px, 1.8vw, 18px);
   padding: clamp(10px, 1.6vw, 14px) clamp(12px, 2vw, 20px);
   border-radius: 12px;
-  background: linear-gradient(180deg, #d8d8dc 0%, #a9a9b0 34%, #85858c 66%, #b9b9bf 100%);
+  /*background: linear-gradient(180deg, #d8d8dc 0%, #a9a9b0 34%, #85858c 66%, #b9b9bf 100%);*/
   box-shadow:
     inset 0 2px 0 rgba(255, 255, 255, 0.7),
     inset 0 -3px 6px rgba(0, 0, 0, 0.35),
@@ -481,6 +621,27 @@ body {
 
 .spin-btn:hover { filter: brightness(1.06); }
 .spin-btn[disabled] { filter: saturate(0.5) brightness(0.85); cursor: default; }
+
+/* Attract mode: while the button is waiting to be pressed its lamp pulses,
+   the same lit look a LUKITSE button gets while it is held. The glow lives on
+   an overlay so it can blink without touching the button's own gradient. */
+@keyframes spin-attract {
+  0%, 100% { opacity: 0.08; }
+  50%      { opacity: 1; }
+}
+
+.spin-btn.is-attracting::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.75),
+    inset 0 0 20px rgba(215, 255, 205, 0.5),
+    0 0 26px 4px rgba(120, 250, 150, 0.95);
+  animation: spin-attract 1.2s ease-in-out infinite;
+}
 
 /* Shrug when every reel is locked and there is nothing to spin */
 @keyframes spin-nudge {
@@ -612,16 +773,131 @@ kbd {
 .sound-btn:hover { color: #fff; }
 .sound-btn[aria-pressed="false"] { opacity: 0.55; }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 :focus-visible {
   outline: 3px solid #fff;
   outline-offset: 2px;
   border-radius: 6px;
 }
 
+/* ---------------- Power state ---------------- */
+
+/* Off: the cabinet is dark and dead, only the coin slot lamp and the LED
+   strip's one line are alive. Transitions run in reverse on power-up. */
+.marquee,
+.play-area,
+.deck,
+.result,
+.logo,
+.marquee-fruit,
+.footnote,
+.reel-item,
+.reel-glass,
+.win-line {
+  transition: filter 0.5s ease, background 0.5s ease, opacity 0.5s ease, box-shadow 0.5s ease;
+}
+
+body.power-off .logo,
+body.power-off .marquee,
+body.power-off .marquee-fruit { filter: grayscale(0.5) brightness(0.62); }
+
+body.power-off .play-area {
+  filter: grayscale(0.5) brightness(0.62);
+}
+
+body.power-off .marquee {
+  box-shadow:
+    inset 0 0 0 3px rgba(255, 255, 255, 0.16),
+    inset 0 -10px 24px rgba(0, 0, 0, 0.35),
+    0 4px 10px rgba(0, 0, 0, 0.45);
+}
+
+body.power-off .reel-window {
+  box-shadow:
+    inset 0 0 0 2px rgba(30, 28, 25, 0.75),
+    inset 0 10px 18px -10px rgba(0, 0, 0, 0.8),
+    inset 0 -10px 18px -10px rgba(0, 0, 0, 0.8);
+}
+
+body.power-off .reel-window {
+  /*background: linear-gradient(180deg, #2a2724 0%, #3a3631 50%, #2a2724 100%);*/
+}
+
+body.power-off .reel-item,
+body.power-off .win-line,
+body.power-off .reel-glass { opacity: 0.1; }
+
+body.power-off .reel-item { opacity: 0; }
+
+body.power-off .reel-label { color: #4b463f; text-shadow: none; }
+
+body.power-off .deck,
+body.power-off .result { filter: saturate(0.7) brightness(0.62); }
+
+/* Nothing on the deck is usable, and nothing but the LED line has text */
+body.power-off .deck,
+body.power-off .result-actions { pointer-events: none; }
+
+body.power-off .result-sentence { opacity: 0; }
+
+body.power-off .footnote > span { opacity: 0; }
+
+/* LED strip: one blinking line instead of the three counters */
+.led-strip { position: relative; margin-top: 1rem; }
+
+.led-off {
+  display: none;
+  position: absolute;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+  font-family: "Courier New", ui-monospace, monospace;
+  font-weight: 700;
+  font-size: clamp(14px, 2.8vw, 26px);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #ff4d7d;
+  text-shadow: 0 0 12px rgba(255, 77, 125, 0.8), 0 0 26px rgba(255, 77, 125, 0.45);
+}
+
+@keyframes led-blink {
+  0%, 62%  { opacity: 1; }
+  63%, 100% { opacity: 0.12; }
+}
+
+body.power-off .led-off { display: flex; animation: led-blink 1.5s steps(1, end) infinite; }
+body.power-off .led-cell { visibility: hidden; }
+
+/* Power-up flicker, added for the length of the animation only */
+@keyframes power-up {
+  0%   { filter: brightness(0.55); }
+  12%  { filter: brightness(1.5); }
+  22%  { filter: brightness(0.7); }
+  38%  { filter: brightness(1.35); }
+  52%  { filter: brightness(0.85); }
+  100% { filter: brightness(1); }
+}
+
+.machine.is-powering-up { animation: power-up 0.9s ease-out; }
+
 /* ---------------- Responsive ---------------- */
 
 @media (max-width: 760px) {
-  :root { --item-h: 68px; --window-mult: 1.9; }
+  :root { --item-h: 68px; --window-mult: 1.9; --slot-size: 50px; }
+
+  /* Room for the slot so it never sits on top of the logo */
+  .marquee { padding-left: clamp(52px, 16vw, 78px); padding-right: clamp(52px, 16vw, 78px); }
+  .coin-unit { right: 10px; top: 50%; }
 
   .machine { border-radius: 28% 28% 20px 20px / 70px 70px 20px 20px; }
   .marquee { border-radius: 30% 30% 8px 8px / 80px 80px 8px 8px; }
@@ -645,4 +921,9 @@ kbd {
 
 @media (prefers-reduced-motion: reduce) {
   .result-sentence { animation: none; }
+  .spin-btn.is-attracting::after { animation: none; opacity: 0.9; }
+  .coin { animation: none; }
+  .machine.is-powering-up { animation: none; }
+  body.power-off .coin-led { animation: none; background: #35ff6a; box-shadow: 0 0 10px 2px rgba(60, 255, 110, 0.8); }
+  body.power-off .led-off { animation: none; }
 }

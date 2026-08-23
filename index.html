@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="power-off">
 
 <main class="machine">
 
@@ -26,25 +26,41 @@
       <span class="logo-sub">Intohimo &times; Toimiala &times; Tulevaisuus</span>
     </h1>
     <div class="marquee-gloss" aria-hidden="true"></div>
+
+    <!-- Coin slot: the machine is dead until a coin goes in -->
+    <div class="coin-unit">
+      <button class="coin-slot" id="coinSlot" type="button" title="Syötä kolikko">
+        <span class="coin-bezel" aria-hidden="true">
+          <span class="coin-mouth"></span>
+          <span class="coin-led"></span>
+        </span>
+        <span class="sr-only">Syötä kolikko ja käynnistä peli</span>
+      </button>
+      <span class="coin" id="coin" aria-hidden="true">&euro;</span>
+    </div>
+
+    <div class="led-strip">
+      <div class="led-off" id="ledOff">Syötä kolikko</div>
+
+      <div class="led-cell">
+        <span class="led-label">Mahdollisuuksia</span>
+        <span class="led-value" id="comboCount">0</span>
+      </div>
+
+      <div class="led-cell">
+        <span class="led-label">Pyöräytyksiä</span>
+        <span class="led-value" id="spinCount">0</span>
+      </div>
+
+      <div class="led-cell">
+        <span class="led-label">Lukittuja</span>
+        <span class="led-value" id="holdCount">0</span>
+      </div>
+    </div>
   </header>
 
-  <!-- LED counter strip -->
-  <div class="led-strip">
-    <div class="led-cell">
-      <span class="led-label">Mahdollisuuksia</span>
-      <span class="led-value" id="comboCount">0</span>
-    </div>
+  <!-- LED counter strip. While the machine is off it shows one line instead. -->
 
-    <div class="led-cell">
-      <span class="led-label">Pyöräytyksiä</span>
-      <span class="led-value" id="spinCount">0</span>
-    </div>
-
-    <div class="led-cell">
-      <span class="led-label">Lukittuja</span>
-      <span class="led-value" id="holdCount">0</span>
-    </div>
-  </div>
 
   <!-- Reels -->
   <section class="play-area" aria-label="Hedelmäpeli">
