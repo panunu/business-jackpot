@@ -495,15 +495,16 @@ body {
 
 /* ---------------- Result ---------------- */
 
+/* Deliberately quiet next to the cabinet: this is the part you actually read. */
 .result {
-  padding: clamp(14px, 2.4vw, 22px) clamp(16px, 3vw, 28px);
-  border-radius: 12px;
+  padding: clamp(18px, 3vw, 28px) clamp(18px, 3.4vw, 34px);
+  border-radius: 14px;
   text-align: center;
-  background: linear-gradient(180deg, #fffdf4, var(--cream-2));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025));
+  border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow:
-    inset 0 0 0 3px rgba(255, 255, 255, 0.8),
-    inset 0 0 0 5px rgba(224, 27, 22, 0.55),
-    0 3px 10px rgba(0, 0, 0, 0.45);
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 12px 26px -14px rgba(0, 0, 0, 0.8);
 }
 
 @keyframes result-in {
@@ -514,34 +515,33 @@ body {
 /* Reserve room for the longest sentence we expect, so the panel keeps its
    height whether it holds an idea or the idle prompt. */
 .result-sentence {
-  min-height: calc(1.35em * 3);
+  min-height: calc(1.5em * 3);
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0;
-  font-family: "Baloo 2", Inter, sans-serif;
-  font-weight: 600;
-  font-size: clamp(15px, 2.4vw, 24px);
-  line-height: 1.35;
+  font-family: Inter, system-ui, sans-serif;
+  font-weight: 400;
+  font-size: clamp(15px, 2.2vw, 23px);
+  line-height: 1.5;
+  letter-spacing: -0.005em;
   text-wrap: balance;
-  color: var(--ink);
+  color: #ece5da;
 }
 
 /* Single flex child, so the sentence itself wraps as normal text. */
 .result-sentence > span { display: block; }
 
 .result-sentence b {
-  font-weight: 800;
-  color: #c81410;
+  font-weight: 600;
+  color: #ffc93c;
 }
 
 .result:not(.is-empty) .result-sentence { animation: result-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
 
 /* Idle state: same geometry, quieter contents, no reachable buttons. */
 .result.is-empty .result-sentence {
-  color: var(--ink-soft);
-  font-weight: 600;
-  opacity: 0.8;
+  color: rgba(236, 229, 218, 0.45);
   /* Nudge down by half the hidden button row, so the prompt looks centred. */
   transform: translateY(26px);
 }
@@ -559,17 +559,17 @@ body {
 .ghost-btn {
   padding: 9px 20px;
   border-radius: 999px;
-  border: 2px solid rgba(224, 27, 22, 0.55);
-  background: #fff;
-  color: #c81410;
-  font-family: "Baloo 2", Inter, sans-serif;
-  font-size: 14px;
-  font-weight: 700;
+  border: 1px solid rgba(255, 201, 60, 0.45);
+  background: transparent;
+  color: #ffc93c;
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
   transition: background 0.15s ease, transform 0.08s ease;
 }
 
-.ghost-btn:hover { background: #ffeceb; }
+.ghost-btn:hover { background: rgba(255, 201, 60, 0.12); }
 .ghost-btn:active { transform: translateY(1px); }
 
 /* ---------------- Footnote ---------------- */
@@ -642,7 +642,7 @@ kbd {
   .deck-holds { gap: 8px; }
   .spin-btn { width: 100%; padding: 12px 4px; }
 
-  .result-sentence { min-height: calc(1.35em * 4); }
+  .result-sentence { min-height: calc(1.5em * 4); }
 }
 
 @media (prefers-reduced-motion: reduce) {
